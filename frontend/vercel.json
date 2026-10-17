@@ -2,6 +2,7 @@
   "cleanUrls": false,
   "trailingSlash": true,
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://evalsync.onrender.com/api/:path*" },
     { "source": "/", "destination": "/login/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
