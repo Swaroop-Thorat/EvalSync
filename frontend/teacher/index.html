@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Teacher Portal · EvalSync</title>
+  <link rel="shortcut icon" href="../src/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../src/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../src/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../src/apple-icon-180x180.png">
+  <meta name="description" content="EvalSync Teacher Portal - Manage coursework, review submissions, detect plagiarism, and run AI analysis.">
+  <script>
+    if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+      location.replace(location.pathname + '/' + location.search + location.hash);
+    }
+  </script>
+  <link rel="stylesheet" href="../admin/style.css">
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="#"><img class="brand-mark" src="../src/apple-icon.png" alt="EvalSync" width="36" height="36"><span>EVALSYNC<small>TEACHER PORTAL</small></span></a>
+      <div class="side-label">WORKSPACE</div>
+      <button class="nav active" data-view="assignments"><span></span> Coursework</button>
+      <button class="nav" data-view="upload"><span></span> Upload Assignment</button>
+      <div class="side-spacer"></div>
+      <div class="profile">
+        <img class="avatar" id="teacher-avatar" src="../src/apple-icon.png" alt="Teacher" width="36" height="36">
+        <span>
+          <strong id="teacher-name">Teacher</strong>
+          <small id="teacher-role">Faculty</small>
+        </span>
+      </div>
+      <button id="logout" class="btn-logout">LOGOUT</button>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <span class="crumb">Teacher / Coursework</span>
+          <h1 id="page-title">Assignments</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <select id="division-selector" class="btn btn-outline" style="height:38px;">
+            <option value="">All Assigned Divisions</option>
+          </select>
+          <span class="today"></span>
+        </div>
+      </header>
+      <section class="content" id="app-content"></section>
+    </main>
+  </div>
+
+  
+  <dialog id="pdf-modal" class="pdf-modal-dialog">
+    <div class="pdf-modal-header">
+      <h3 id="pdf-title">Document Preview</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="pdf-page-label">Page 1</span>
+        <button id="pdf-prev" class="btn btn-outline btn-sm">Prev</button>
+        <button id="pdf-next" class="btn btn-outline btn-sm">Next</button>
+        <a id="pdf-open-tab" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Open in Tab</a>
+        <button id="pdf-close" class="close-btn">X</button>
+      </div>
+    </div>
+    <div id="pdf-error" class="alert alert-danger" hidden></div>
+    <div class="pdf-canvas-container">
+      <canvas id="pdf-canvas"></canvas>
+    </div>
+  </dialog>
+
+  
+  <dialog id="diff-modal" class="diff-modal-dialog">
+    <div class="diff-modal-header">
+      <div>
+        <h3 id="diff-title">Plagiarism Side-by-Side Diff</h3>
+        <p id="diff-subtitle"></p>
+      </div>
+      <button id="diff-close" class="close-btn">&times;</button>
+    </div>
+    <div class="diff-body">
+      <div class="diff-pane" id="diff-pane-a">
+        <div class="diff-pane-header">
+          <strong id="diff-student-a-name">Student A</strong>
+          <span class="chip chip-student" id="diff-student-a-chip">Submission A</span>
+        </div>
+        <div class="diff-text" id="diff-text-a"></div>
+      </div>
+      <div class="diff-pane" id="diff-pane-b">
+        <div class="diff-pane-header">
+          <strong id="diff-student-b-name">Student B</strong>
+          <span class="chip chip-student" id="diff-student-b-chip">Submission B</span>
+        </div>
+        <div class="diff-text" id="diff-text-b"></div>
+      </div>
+    </div>
+  </dialog>
+
+  
+  <dialog id="ai-questions-modal" class="ai-modal-dialog">
+    <div class="modal-header">
+      <div>
+        <h3 id="ai-q-title">AI Viva Questions</h3>
+        <p id="ai-q-subtitle"></p>
+      </div>
+      <button id="ai-q-close" class="close-btn">&times;</button>
+    </div>
+    <div id="ai-q-loading" hidden>
+      Generating viva oral examination questions with Gemini...
+    </div>
+    <div id="ai-q-list" class="ai-question-cards"></div>
+  </dialog>
+
+  
+  <dialog id="ai-relevance-modal" class="ai-modal-dialog">
+    <div class="modal-header">
+      <div>
+        <h3 id="ai-rel-title">Topic Relevance Check</h3>
+        <p id="ai-rel-subtitle"></p>
+      </div>
+      <button id="ai-rel-close" class="close-btn">&times;</button>
+    </div>
+    <div id="ai-rel-loading" hidden>
+      Analyzing semantic relevance to assigned topic with Gemini...
+    </div>
+    <div id="ai-rel-content" class="ai-verdict-card"></div>
+  </dialog>
+
+  
+  <dialog id="ai-detect-modal" class="ai-modal-dialog">
+    <div class="modal-header">
+      <div>
+        <h3 id="ai-det-title">AI Content Detection</h3>
+        <p id="ai-det-subtitle"></p>
+      </div>
+      <button id="ai-det-close" class="close-btn">&times;</button>
+    </div>
+    
+    <div id="ai-det-warning-banner" style="display:none;">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <strong id="ai-det-warning-title">AI DETECTOR LIMIT REACHED:</strong>
+        <span id="ai-det-warning-text">API quota reached or key unconfigured.</span>
+      </span>
+    </div>
+    <div id="ai-det-loading" hidden>
+      Querying AI detector for likelihood estimation...
+    </div>
+    <div id="ai-det-content" class="ai-verdict-card"></div>
+  </dialog>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/auth.js"></script>
+  <script src="../shared/pdfViewer.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

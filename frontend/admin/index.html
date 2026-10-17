@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin · EvalSync</title>
+    <link rel="shortcut icon" href="../src/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../src/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../src/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../src/apple-icon-180x180.png">
+    <script>
+        if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+            location.replace(location.pathname + '/' + location.search + location.hash);
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <a class="brand" href="#">
+                <img class="brand-mark" src="../src/apple-icon.png" alt="EvalSync" width="36" height="36">
+                <span>EVALSYNC<small>ADMIN PORTAL</small></span>
+            </a>
+            <div class="side-label">WORKSPACE</div>
+            <button class="nav active" data-view="overview"><span></span> Overview</button>
+            <button class="nav" data-view="users"><span></span> People <b id="user-count">07</b></button>
+            <button class="nav" data-view="classes"><span></span> Classes & Divisions</button>
+            <div class="side-spacer"></div>
+            <div class="profile">
+                <img class="avatar" src="../src/apple-icon.png" alt="School Admin" width="36" height="36">
+                <span>
+                    <strong>School Admin</strong>
+                    <small>Administrator</small>
+                </span>
+            </div>
+            <button id="logout" class="btn-logout">LOGOUT</button>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <span class="crumb">Workspace / Admin</span>
+                    <h1 id="page-title">Overview</h1>
+                </div>
+                <span class="today"></span>
+            </header>
+            <section class="content" id="app-content"></section>
+        </main>
+    </div>
+    <script src="../shared/api.js"></script>
+    <script src="../shared/auth.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Student Portal · EvalSync</title>
+  <link rel="shortcut icon" href="../src/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../src/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../src/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../src/apple-icon-180x180.png">
+  <meta name="description" content="EvalSync Student Portal - View coursework, submit assignments, and track your submission history.">
+  <script>
+    if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+      location.replace(location.pathname + '/' + location.search + location.hash);
+    }
+  </script>
+  <link rel="stylesheet" href="../admin/style.css">
+  <link rel="stylesheet" href="../teacher/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="#"><img class="brand-mark" src="../src/apple-icon.png" alt="EvalSync" width="36" height="36"><span>EVALSYNC<small>STUDENT PORTAL</small></span></a>
+      <div class="side-label">ACADEMIC WORK</div>
+      <button class="nav active" data-view="assignments"><span></span> Coursework</button>
+      <button class="nav" data-view="history"><span></span> Submission History</button>
+      <div class="side-spacer"></div>
+      <div class="profile">
+        <img class="avatar" id="student-avatar" src="../src/apple-icon.png" alt="Student" width="36" height="36">
+        <span>
+          <strong id="student-name">Student</strong>
+          <small id="student-div-label">Student</small>
+        </span>
+      </div>
+      <button id="logout" class="btn-logout">LOGOUT</button>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <span class="crumb">Student / Dashboard</span>
+          <h1 id="page-title">Assigned Coursework</h1>
+        </div>
+        <span class="today"></span>
+      </header>
+      <section class="content" id="app-content"></section>
+    </main>
+  </div>
+
+  
+  <dialog id="pdf-modal" class="pdf-modal-dialog">
+    <div class="pdf-modal-header">
+      <h3 id="pdf-title">Document Preview</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="pdf-page-label">Page 1</span>
+        <button id="pdf-prev" class="btn btn-outline btn-sm">Prev</button>
+        <button id="pdf-next" class="btn btn-outline btn-sm">Next</button>
+        <a id="pdf-open-tab" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Open in Tab</a>
+        <button id="pdf-close" class="close-btn">X</button>
+      </div>
+    </div>
+    <div id="pdf-error" class="alert alert-danger" hidden></div>
+    <div class="pdf-canvas-container">
+      <canvas id="pdf-canvas"></canvas>
+    </div>
+  </dialog>
+
+  <script src="../shared/api.js"></script>
+  <script src="../shared/auth.js"></script>
+  <script src="../shared/pdfViewer.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
