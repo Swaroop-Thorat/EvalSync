@@ -27,7 +27,7 @@ app.use(helmet({
 
 const configuredOrigins = (process.env.FRONTEND_ORIGIN || '')
   .split(',')
-  .map(o => o.trim())
+  .map(o => o.trim().replace(/\/$/, ''))
   .filter(Boolean);
 
 const defaultOrigins = [
@@ -41,7 +41,11 @@ const allowedOrigins = Array.from(new Set([...configuredOrigins, ...defaultOrigi
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(cleanOrigin)) {
       return callback(null, true);
     }
     return callback(new Error('Blocked by CORS policy'));

@@ -1,6 +1,7 @@
 (function () {
   const key = 'evalsync.session';
-  const customBase = window.EVALSYNC_API_BASE || (window.__ENV__ && window.__ENV__.API_BASE);
+  const isVercel = window.location.hostname.includes('vercel.app');
+  const customBase = window.EVALSYNC_API_BASE || (window.__ENV__ && window.__ENV__.API_BASE) || (isVercel ? 'https://evalsync.onrender.com/api' : null);
   const isLocalDev3000 = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000';
   const API_BASE = customBase || (isLocalDev3000 ? 'http://localhost:5000/api' : '/api');
 
